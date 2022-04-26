@@ -20,23 +20,9 @@ function acquia_cms_site_studio_install() {
   // Set default theme as cohesion.
   set_theme_site_studio_as_default();
 
-  // Don't do anything during site installation, since that can have unintended
-  // side effects. We have separate task in acquia_cms profile which do the same
-  // thing if this module is being installed as part of profile.
-  // @see $tasks['install_acms_site_studio_initialize'] & $tasks['install_acms_site_studio_ui_kit'].
+  // Set credentials if module being installed independently.
   if (!InstallerKernel::installationAttempted() && $site_studio_api_key && $site_studio_org_key) {
-    // Set credentials if module being installed independently.
     set_site_studio_credentials($site_studio_api_key, $site_studio_org_key);
-
-    // If the user has configured their Cohesion keys, and site studio module
-    // exists lets import all elements and its components.
-    batch_set(install_acms_site_studio_initialize());
-    batch_set(site_studio_import_ui_kit());
-
-    // Invoke site studio rebuild if module is being install via UI.
-    if (PHP_SAPI !== 'cli') {
-      acquia_cms_site_studio_rebuild_styles();
-    }
   }
 
   // Update search & search_fallback views display_options's style
