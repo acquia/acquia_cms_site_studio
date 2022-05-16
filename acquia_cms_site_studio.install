@@ -43,6 +43,15 @@ function acquia_cms_site_studio_install() {
         ->save();
     }
   }
+
+  // Trigger save on page body field to update it.
+  if (!InstallerKernel::installationAttempted() && $module_handler->moduleExists('acquia_cms_page') ) {
+    $config = \Drupal::service('config.factory')->getEditable('field.field.node.page.body');
+    if (!empty($config)) {
+      $config->save();
+    }
+  }
+
   // Set default configurations for node revision delete module.
   $config = \Drupal::service('config.factory')->getEditable('node_revision_delete.settings');
   if (!empty($config)) {
@@ -50,6 +59,13 @@ function acquia_cms_site_studio_install() {
       ->set('node_revision_delete_time', '604800')
       ->save();
   }
+}
+
+/**
+ * Implements hook_module_preinstall().
+ */
+function acquia_cms_site_studio_module_preinstall($module) {
+  \Drupal::service('acquia_cms_common.utility')->setModulePreinstallTriggered($module);
 }
 
 /**
@@ -130,5 +146,19 @@ function acquia_cms_site_studio_update_8003() {
       $type->setThirdPartySetting('node_revision_delete', 'when_to_delete', '0');
       $type->save();
     }
+  }
+}
+
+/**
+ * Implements hook_uninstall().
+ *
+ * Reset page field body's label and descritption to default.
+ */
+function acquia_cms_site_studio_uninstall() {
+  $config = \Drupal::service('config.factory')->getEditable('field.field.node.page.body');
+  if (!empty($config)) {
+    $config->set('label', 'Body');
+    $config->set('description', '');
+    $config->save();
   }
 }
