@@ -6,6 +6,7 @@
  */
 
 use Drupal\Core\Installer\InstallerKernel;
+use Drupal\Core\Config\FileStorage;
 use Drupal\node\Entity\NodeType;
 
 /**
@@ -59,6 +60,15 @@ function acquia_cms_site_studio_install() {
       ->set('node_revision_delete_time', '604800')
       ->save();
   }
+  // Re-write the editor and filter format config from
+  // optional directory since we have don some update to it.
+  $module_path = \Drupal::moduleHandler()->getModule('acquia_cms_site_studio')->getPath();
+  $config_optional = $module_path . '/config/optional';
+  $source_optional_dir = new FileStorage($config_optional);
+
+  $config_storage = \Drupal::service('config.storage');
+  $config_storage->write('editor.editor.cohesion', $source_optional_dir->read('editor.editor.cohesion'));
+  $config_storage->write('filter.format.cohesion', $source_optional_dir->read('filter.format.cohesion'));
 }
 
 /**
