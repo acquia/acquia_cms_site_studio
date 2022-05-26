@@ -5,8 +5,8 @@
  * Contains install-time code for the Acquia CMS profile.
  */
 
-use Drupal\Core\Installer\InstallerKernel;
 use Drupal\Core\Config\FileStorage;
+use Drupal\Core\Installer\InstallerKernel;
 use Drupal\node\Entity\NodeType;
 
 /**
@@ -45,11 +45,33 @@ function acquia_cms_site_studio_install() {
     }
   }
 
-  // Trigger save on page body field to update it.
-  if (!InstallerKernel::installationAttempted() && $module_handler->moduleExists('acquia_cms_page') ) {
-    $config = \Drupal::service('config.factory')->getEditable('field.field.node.page.body');
-    if (!empty($config)) {
-      $config->save();
+  // If module getting install stand alone.
+  if (!InstallerKernel::installationAttempted()) {
+    // Trigger save on page body field to update it.
+    if ($module_handler->moduleExists('acquia_cms_page') ) {
+      $config = \Drupal::service('config.factory')->getEditable('field.field.node.page.body');
+      if (!empty($config)) {
+        $config->save();
+      }
+    }
+    // Update content views on module install.
+    if ($module_handler->moduleExists('acquia_cms_search')) {
+      if ($module_handler->moduleExists('acquia_cms_article')) {
+        _acquia_cms_common_update_view_display_options_style('articles');
+        _acquia_cms_common_update_view_display_options_style('articles_fallback');
+      }
+      if ($module_handler->moduleExists('acquia_cms_event')) {
+        _acquia_cms_common_update_view_display_options_style('events');
+        _acquia_cms_common_update_view_display_options_style('events_fallback');
+      }
+      if ($module_handler->moduleExists('acquia_cms_place')) {
+        _acquia_cms_common_update_view_display_options_style('places');
+        _acquia_cms_common_update_view_display_options_style('places_fallback');
+      }
+      if ($module_handler->moduleExists('acquia_cms_person')) {
+        _acquia_cms_common_update_view_display_options_style('people', 'default', 'view_tpl_people_grid');
+        _acquia_cms_common_update_view_display_options_style('people_fallback');
+      }
     }
   }
 
@@ -60,6 +82,7 @@ function acquia_cms_site_studio_install() {
       ->set('node_revision_delete_time', '604800')
       ->save();
   }
+
   // Re-write the editor and filter format config from
   // optional directory since we have don some update to it.
   $module_path = \Drupal::moduleHandler()->getModule('acquia_cms_site_studio')->getPath();
