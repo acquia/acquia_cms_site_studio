@@ -16,7 +16,5 @@ dependencies:
   - drupal:cohesion_website_settings
   - drupal:config_ignore
   - drupal:collapsiblock
-  - drupal:config
-  - drupal:config_rewrite
   - drupal:node_revision_delete
   - drupal:sitestudio_page_builder
