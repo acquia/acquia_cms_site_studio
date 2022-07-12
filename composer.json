@@ -10,6 +10,10 @@
         "drupal/collapsiblock": "^3",
         "drupal/node_revision_delete": "^1.0@RC"
     },
+    "require-dev": {
+        "axelerant/drupal-quality-checker": "^1.1",
+        "phpspec/prophecy-phpunit": "^2.0"
+    },
     "config": {
         "allow-plugins": {
             "composer/installers": true,
